@@ -31,8 +31,8 @@ def main():
     rotation = args.rotation
     position_str = str(query.ra.data[0]) + "," + str(query.dec.data[0])
     print(position_str)
-#    paths = SkyView.get_images(position=position_str,survey=['DSS2 Blue','DSS2 IR','DSS2 Red'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
-    paths = SkyView.get_images(position=position_str,survey=['UVOT UVM2 Intensity'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
+    paths = SkyView.get_images(position=position_str,survey=['DSS2 Blue','DSS2 IR','DSS2 Red'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
+#    paths = SkyView.get_images(position=position_str,survey=['UVOT UVM2 Intensity'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
     print(paths)
     fig, ax = plt.subplots()
     im = ax.imshow(paths[0][0].data)
