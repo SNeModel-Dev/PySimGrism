@@ -7,3 +7,4 @@ Usage: PySimGrism.py target rotation(deg)
 Example:
 PySimGrism.py m77 10
 ![](pysimgrism_m77_10.png)
+![](m81_targeted.png)
