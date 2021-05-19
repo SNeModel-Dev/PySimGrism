@@ -10,3 +10,6 @@ PySimGrism.py m77 10
 
 Image from GALEX UV with targeting of the source.
 ![](m81_targeted.png)
+
+Multiple Nearby Targets:
+![](m101_nearby_targets.png)
