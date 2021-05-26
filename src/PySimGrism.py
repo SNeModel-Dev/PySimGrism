@@ -27,29 +27,23 @@ class SimbadQuery:
         #print("dec: " + str(type(self.dec)))
 
 def queryVizier(target, cat):
-    result = Vizier.query_region(target, radius=Angle(0.10, "deg"), catalog='GALEX')
+    v = Vizier(catalog='GALEX', columns=['RAJ2000', 'DEJ2000', '+NUV'], column_filters={'NUV': '<19'})
+    result = v.query_region(target, width=Angle(0.50, "deg"))
     #print(result)
     good_objects = []
     for table_name in result.keys():
         if table_name == 'II/312/ais':
-            print(table_name)
-            print(result[table_name].keys())
             data = result[table_name]
         #print("Asymtotic FUV Magnitude:")
         #print(data['asyFUV'])
-            print("NUV Magnitude:")
-            print(data['NUV'])
     #    print("Ra:")
     #    print(data["RAJ2000"])
             pd_data = data.to_pandas()
+            print(pd_data)
+            #pd_data = data.to_pandas().sort_values(by=["NUV"], inplace=True)
+            #print(pd_data)
     #    print(pd_data)
-            print("Pandas print")
             for row in pd_data.to_numpy():
-                print(row[0])
-                print(row[1])
-                print(row[4])
-            #print(pd_data['RAJ2000'][0])
-            #print(pd_data['DEJ2000'][0])
                 coord = SkyCoord(str(row[0]) + " " + str(row[1]), unit=(u.deg, u.deg), frame="icrs", equinox="j2000")
                 good_objects.append(coord)
     return good_objects
@@ -75,7 +69,7 @@ def main():
 
     #print(position_str)
     #paths = SkyView.get_images(position=position_str,survey=['DSS2 Blue','DSS2 IR','DSS2 Red'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
-    paths = SkyView.get_images(position=coor,survey=['GALEX Near UV', 'GALEX Far UV'],pixels='2400,2400',coordinates='J2000',grid=True,gridlabels=True)
+    paths = SkyView.get_images(position=coor,survey=['GALEX Near UV', 'GALEX Far UV'],coordinates='J2000',grid=True,gridlabels=True, height=u.Quantity(.5, u.deg), width=u.Quantity(.5, u.deg))
     print(paths)
     fig, ax = plt.subplots()
     targets.append(coor)
@@ -83,10 +77,13 @@ def main():
         w = WCS(path[0].header)
         for targ in targets:
             x,y = w.world_to_pixel(targ)
-            print("X: " + str(x) + " Y: " + str(y))
             rect = patches.Rectangle((x-5, y-5), 11, 11, linewidth=1, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
    #     montage.mRotate(path[0], "test.fits", rotation_angle="20.0")
+    coord_str = args.target.split()
+    coord_xc = float(coord_str[0])
+    coord_yc = float(coord_str[1])
+    coord_xc2 = coord_xc + 0.000416667
 
     #print(paths[0][0])
     im = ax.imshow(paths[0][0].data)
@@ -95,7 +92,6 @@ def main():
     x1, x2, y1, y2 = im.get_extent()
     ax.plot([x1, x2, x2, x1, x1], [y1, y1, y2, y2, y1], "y--", transform=trans_data)
 
-    print(paths[0][0].data)
     plt.show()
 if __name__=="__main__":
     main()
