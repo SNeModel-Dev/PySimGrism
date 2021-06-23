@@ -26,7 +26,7 @@ class SimbadQuery:
         #print("ra: " + str(type(self.ra)))
         #print("dec: " + str(type(self.dec)))
 
-def queryVizier(target, cat):
+def queryVizier(target, cat, output_file):
     v = Vizier(catalog='GALEX', columns=['RAJ2000', 'DEJ2000', '+NUV'], column_filters={'NUV': '<19'})
     result = v.query_region(target, width=Angle(0.50, "deg"))
     #print(result)
@@ -40,6 +40,8 @@ def queryVizier(target, cat):
     #    print(data["RAJ2000"])
             pd_data = data.to_pandas()
             print(pd_data)
+            if output_file is not None:
+                pd_data.to_csv(output_file)
             #pd_data = data.to_pandas().sort_values(by=["NUV"], inplace=True)
             #print(pd_data)
     #    print(pd_data)
@@ -52,10 +54,14 @@ def main():
     parser.add_argument("target", help="Simbad target string")
     parser.add_argument("rotation", help="Rotation of image in degrees", type=float)
     parser.add_argument("--use_name", help="Look up using name, coordinates otherwise", action='store_true')
+    parser.add_argument("--output_file", help="File name for output")
     args = parser.parse_args()
     if args.use_name:
         query = SimbadQuery(args.target)
-    targets = queryVizier(args.target, 0.1)
+    output_file = None
+    if args.output_file is not None:
+        output_file = args.output_file
+    targets = queryVizier(args.target, 0.1, output_file)
 
 #    paths = SkyView.get_images(position="vega", survey=["UVOT UVM2 Intensity"])
     rotation = args.rotation
