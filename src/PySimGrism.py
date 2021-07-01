@@ -79,17 +79,42 @@ def main():
     print(paths)
     fig, ax = plt.subplots()
     targets.append(coor)
+    x_deg = 0.000416667
+    y_deg = 0.00138889
     for path in paths:
+        coord_str = args.target.split()
+        coord_xc = float(coord_str[0])
+        coord_yc = float(coord_str[1])
+        coord_xc2 = coord_xc - x_deg
+        coord_yc2 = coord_yc + y_deg
+        coord_xc3 = coord_xc + x_deg
+        coord_yc3 = coord_yc - y_deg
+        sky_coordc = SkyCoord(coord_xc, coord_yc, unit=(u.deg, u.deg), frame="icrs", equinox="j2000")
+        sky_coord1 = SkyCoord(coord_xc2, coord_yc2, unit=(u.deg, u.deg), frame="icrs", equinox="j2000")
+        sky_coord2 = SkyCoord(coord_xc3, coord_yc3, unit=(u.deg, u.deg), frame="icrs", equinox="j2000")
         w = WCS(path[0].header)
+        xc, yc = w.world_to_pixel(sky_coordc)
+        print("xc yc: " + str(xc) + " " + str(yc))
+        x1, y1 = w.world_to_pixel(sky_coord1)
+        print("x1 y1: " + str(x1) + " " + str(y1))
+        x2, y2 = w.world_to_pixel(sky_coord2)
+        print("x2 y2: " + str(x2) + " " + str(y2))
+        width = x2-x1
+        height = y1-y2
+        slit = patches.Rectangle((x1, y1), width, height, linewidth=1, edgecolor='b', facecolor='none')
+        ax.add_patch(slit)
         for targ in targets:
+            print(targ)
             x,y = w.world_to_pixel(targ)
             rect = patches.Rectangle((x-5, y-5), 11, 11, linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(rect)
+            #ax.add_patch(rect)
    #     montage.mRotate(path[0], "test.fits", rotation_angle="20.0")
+
     coord_str = args.target.split()
     coord_xc = float(coord_str[0])
     coord_yc = float(coord_str[1])
     coord_xc2 = coord_xc + 0.000416667
+
 
     #print(paths[0][0])
     im = ax.imshow(paths[0][0].data)
